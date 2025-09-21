@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单位换算器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        neutral: '#1F2937',
+                        'neutral-light': '#F3F4F6'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .converter-card {
+                @apply bg-white rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl;
+            }
+            .converter-header {
+                @apply text-2xl font-bold text-neutral mb-6 flex items-center;
+            }
+            .input-field {
+                @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200;
+            }
+            .select-field {
+                @apply w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none cursor-pointer transition-all duration-200;
+            }
+            .conversion-button {
+                @apply w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2;
+            }
+            .result-display {
+                @apply mt-6 p-4 bg-neutral-light rounded-lg transition-all duration-300;
+            }
+            .result-value {
+                @apply text-2xl font-bold text-primary transition-all duration-300;
+            }
+            .category-tab {
+                @apply py-3 px-6 font-medium text-neutral border-b-2 border-transparent hover:text-primary hover:border-primary/30 transition-all duration-200 cursor-pointer;
+            }
+            .category-tab.active {
+                @apply text-primary border-primary;
+            }
+            .icon {
+                @apply mr-3 text-primary;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-inter">
+    <div class="container mx-auto px-4 py-12 max-w-5xl">
+        <!-- 标题区域 -->
+        <div class="text-center mb-10">
+            <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold text-neutral mb-4">单位换算器</h1>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto">快速准确地进行各种科学单位之间的换算，覆盖长度、重量、温度、时间和面积等常见类别</p>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- 类别标签 -->
+            <div class="flex flex-wrap border-b border-gray-200">
+                <button id="length-tab" class="category-tab active" data-category="length">
+                    <i class="fa fa-arrows-h icon"></i>长度
+                </button>
+                <button id="weight-tab" class="category-tab" data-category="weight">
+                    <i class="fa fa-balance-scale icon"></i>重量
+                </button>
+                <button id="temperature-tab" class="category-tab" data-category="temperature">
+                    <i class="fa fa-thermometer-half icon"></i>温度
+                </button>
+                <button id="time-tab" class="category-tab" data-category="time">
+                    <i class="fa fa-clock-o icon"></i>时间
+                </button>
+                <button id="area-tab" class="category-tab" data-category="area">
+                    <i class="fa fa-clone icon"></i>面积
+                </button>
+            </div>
+
+            <!-- 换算器内容 -->
+            <div class="p-8">
+                <!-- 长度换算器 -->
+                <div id="length" class="converter-card active">
+                    <div class="converter-header">
+                        <i class="fa fa-arrows-h icon"></i>长度单位换算
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="length-value" class="block text-sm font-medium text-gray-700 mb-2">数值</label>
+                            <input type="number" id="length-value" class="input-field" placeholder="输入数值" value="1">
+                        </div>
+                        <div>
+                            <label for="length-from" class="block text-sm font-medium text-gray-700 mb-2">从</label>
+                            <select id="length-from" class="select-field">
+                                <option value="meter">米 (m)</option>
+                                <option value="kilometer">千米 (km)</option>
+                                <option value="centimeter">厘米 (cm)</option>
+                                <option value="millimeter">毫米 (mm)</option>
+                                <option value="inch">英寸 (in)</option>
+                                <option value="foot">英尺 (ft)</option>
+                                <option value="yard">码 (yd)</option>
+                                <option value="mile">英里 (mi)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="length-to" class="block text-sm font-medium text-gray-700 mb-2">到</label>
+                            <select id="length-to" class="select-field">
+                                <option value="meter">米 (m)</option>
+                                <option value="kilometer">千米 (km)</option>
+                                <option value="centimeter">厘米 (cm)</option>
+                                <option value="millimeter">毫米 (mm)</option>
+                                <option value="inch">英寸 (in)</option>
+                                <option value="foot">英尺 (ft)</option>
+                                <option value="yard">码 (yd)</option>
+                                <option value="mile">英里 (mi)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="convert-length" class="conversion-button">
+                                <i class="fa fa-exchange mr-2"></i>转换
+                            </button>
+                        </div>
+                    </div>
+                    <div id="length-result" class="result-display">
+                        <p class="text-gray-600">结果将显示在这里</p>
+                    </div>
+                </div>
+
+                <!-- 重量换算器 -->
+                <div id="weight" class="converter-card hidden">
+                    <div class="converter-header">
+                        <i class="fa fa-balance-scale icon"></i>重量单位换算
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="weight-value" class="block text-sm font-medium text-gray-700 mb-2">数值</label>
+                            <input type="number" id="weight-value" class="input-field" placeholder="输入数值" value="1">
+                        </div>
+                        <div>
+                            <label for="weight-from" class="block text-sm font-medium text-gray-700 mb-2">从</label>
+                            <select id="weight-from" class="select-field">
+                                <option value="kilogram">千克 (kg)</option>
+                                <option value="gram">克 (g)</option>
+                                <option value="milligram">毫克 (mg)</option>
+                                <option value="metric-ton">吨 (t)</option>
+                                <option value="pound">磅 (lb)</option>
+                                <option value="ounce">盎司 (oz)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="weight-to" class="block text-sm font-medium text-gray-700 mb-2">到</label>
+                            <select id="weight-to" class="select-field">
+                                <option value="kilogram">千克 (kg)</option>
+                                <option value="gram">克 (g)</option>
+                                <option value="milligram">毫克 (mg)</option>
+                                <option value="metric-ton">吨 (t)</option>
+                                <option value="pound">磅 (lb)</option>
+                                <option value="ounce">盎司 (oz)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="convert-weight" class="conversion-button">
+                                <i class="fa fa-exchange mr-2"></i>转换
+                            </button>
+                        </div>
+                    </div>
+                    <div id="weight-result" class="result-display">
+                        <p class="text-gray-600">结果将显示在这里</p>
+                    </div>
+                </div>
+
+                <!-- 温度换算器 -->
+                <div id="temperature" class="converter-card hidden">
+                    <div class="converter-header">
+                        <i class="fa fa-thermometer-half icon"></i>温度单位换算
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="temperature-value" class="block text-sm font-medium text-gray-700 mb-2">数值</label>
+                            <input type="number" id="temperature-value" class="input-field" placeholder="输入数值" value="25">
+                        </div>
+                        <div>
+                            <label for="temperature-from" class="block text-sm font-medium text-gray-700 mb-2">从</label>
+                            <select id="temperature-from" class="select-field">
+                                <option value="celsius">摄氏度 (°C)</option>
+                                <option value="fahrenheit">华氏度 (°F)</option>
+                                <option value="kelvin">开尔文 (K)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="temperature-to" class="block text-sm font-medium text-gray-700 mb-2">到</label>
+                            <select id="temperature-to" class="select-field">
+                                <option value="celsius">摄氏度 (°C)</option>
+                                <option value="fahrenheit">华氏度 (°F)</option>
+                                <option value="kelvin">开尔文 (K)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="convert-temperature" class="conversion-button">
+                                <i class="fa fa-exchange mr-2"></i>转换
+                            </button>
+                        </div>
+                    </div>
+                    <div id="temperature-result" class="result-display">
+                        <p class="text-gray-600">结果将显示在这里</p>
+                    </div>
+                </div>
+
+                <!-- 时间换算器 -->
+                <div id="time" class="converter-card hidden">
+                    <div class="converter-header">
+                        <i class="fa fa-clock-o icon"></i>时间单位换算
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="time-value" class="block text-sm font-medium text-gray-700 mb-2">数值</label>
+                            <input type="number" id="time-value" class="input-field" placeholder="输入数值" value="1">
+                        </div>
+                        <div>
+                            <label for="time-from" class="block text-sm font-medium text-gray-700 mb-2">从</label>
+                            <select id="time-from" class="select-field">
+                                <option value="second">秒 (s)</option>
+                                <option value="minute">分钟 (min)</option>
+                                <option value="hour">小时 (h)</option>
+                                <option value="day">天 (d)</option>
+                                <option value="week">周 (wk)</option>
+                                <option value="month">月 (30天)</option>
+                                <option value="year">年 (365天)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="time-to" class="block text-sm font-medium text-gray-700 mb-2">到</label>
+                            <select id="time-to" class="select-field">
+                                <option value="second">秒 (s)</option>
+                                <option value="minute">分钟 (min)</option>
+                                <option value="hour">小时 (h)</option>
+                                <option value="day">天 (d)</option>
+                                <option value="week">周 (wk)</option>
+                                <option value="month">月 (30天)</option>
+                                <option value="year">年 (365天)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="convert-time" class="conversion-button">
+                                <i class="fa fa-exchange mr-2"></i>转换
+                            </button>
+                        </div>
+                    </div>
+                    <div id="time-result" class="result-display">
+                        <p class="text-gray-600">结果将显示在这里</p>
+                    </div>
+                </div>
+
+                <!-- 面积换算器 -->
+                <div id="area" class="converter-card hidden">
+                    <div class="converter-header">
+                        <i class="fa fa-clone icon"></i>面积单位换算
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="area-value" class="block text-sm font-medium text-gray-700 mb-2">数值</label>
+                            <input type="number" id="area-value" class="input-field" placeholder="输入数值" value="1">
+                        </div>
+                        <div>
+                            <label for="area-from" class="block text-sm font-medium text-gray-700 mb-2">从</label>
+                            <select id="area-from" class="select-field">
+                                <option value="square-meter">平方米 (m²)</option>
+                                <option value="square-kilometer">平方千米 (km²)</option>
+                                <option value="square-centimeter">平方厘米 (cm²)</option>
+                                <option value="square-millimeter">平方毫米 (mm²)</option>
+                                <option value="square-inch">平方英寸 (in²)</option>
+                                <option value="square-foot">平方英尺 (ft²)</option>
+                                <option value="square-yard">平方码 (yd²)</option>
+                                <option value="acre">英亩 (acre)</option>
+                                <option value="hectare">公顷 (ha)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="area-to" class="block text-sm font-medium text-gray-700 mb-2">到</label>
+                            <select id="area-to" class="select-field">
+                                <option value="square-meter">平方米 (m²)</option>
+                                <option value="square-kilometer">平方千米 (km²)</option>
+                                <option value="square-centimeter">平方厘米 (cm²)</option>
+                                <option value="square-millimeter">平方毫米 (mm²)</option>
+                                <option value="square-inch">平方英寸 (in²)</option>
+                                <option value="square-foot">平方英尺 (ft²)</option>
+                                <option value="square-yard">平方码 (yd²)</option>
+                                <option value="acre">英亩 (acre)</option>
+                                <option value="hectare">公顷 (ha)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button id="convert-area" class="conversion-button">
+                                <i class="fa fa-exchange mr-2"></i>转换
+                            </button>
+                        </div>
+                    </div>
+                    <div id="area-result" class="result-display">
+                        <p class="text-gray-600">结果将显示在这里</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>© 2025 单位换算器 | 科学单位之间的便捷转换工具</p>
+        </footer>
+    </div>
+
+    <script>
+        // 长度单位换算
+        document.getElementById('convert-length').addEventListener('click', function() {
+            const value = parseFloat(document.getElementById('length-value').value);
+            const fromUnit = document.getElementById('length-from').value;
+            const toUnit = document.getElementById('length-to').value;
+            
+            if (isNaN(value)) {
+                document.getElementById('length-result').innerHTML = '<p class="text-red-500">请输入有效的数值</p>';
+                return;
+            }
+            
+            // 基础单位为米(m)
+            const units = {
+                'meter': 1,
+                'kilometer': 1000,
+                'centimeter': 0.01,
+                'millimeter': 0.001,
+                'inch': 0.0254,
+                'foot': 0.3048,
+                'yard': 0.9144,
+                'mile': 1609.34
+            };
+            
+            // 转换为基础单位
+            const baseValue = value * units[fromUnit];
+            // 转换为目标单位
+            const result = baseValue / units[toUnit];
+            
+            // 格式化结果
+            const formattedResult = formatNumber(result);
+            
+            // 显示结果
+            document.getElementById('length-result').innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <p class="text-gray-600">${formatNumber(value)} ${getUnitSymbol(fromUnit)} 等于</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <p class="result-value">${formattedResult} ${getUnitSymbol(toUnit)}</p>
+                    </div>
+                </div>
+            `;
+            
+            // 添加动画效果
+            document.getElementById('length-result').classList.add('bg-blue-50');
+            setTimeout(() => {
+                document.getElementById('length-result').classList.remove('bg-blue-50');
+            }, 1000);
+        });
+
+        // 重量单位换算
+        document.getElementById('convert-weight').addEventListener('click', function() {
+            const value = parseFloat(document.getElementById('weight-value').value);
+            const fromUnit = document.getElementById('weight-from').value;
+            const toUnit = document.getElementById('weight-to').value;
+            
+            if (isNaN(value)) {
+                document.getElementById('weight-result').innerHTML = '<p class="text-red-500">请输入有效的数值</p>';
+                return;
+            }
+            
+            // 基础单位为千克(kg)
+            const units = {
+                'kilogram': 1,
+                'gram': 0.001,
+                'milligram': 0.000001,
+                'metric-ton': 1000,
+                'pound': 0.45359237,
+                'ounce': 0.0283495231
+            };
+            
+            // 转换为基础单位
+            const baseValue = value * units[fromUnit];
+            // 转换为目标单位
+            const result = baseValue / units[toUnit];
+            
+            // 格式化结果
+            const formattedResult = formatNumber(result);
+            
+            // 显示结果
+            document.getElementById('weight-result').innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <p class="text-gray-600">${formatNumber(value)} ${getUnitSymbol(fromUnit)} 等于</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <p class="result-value">${formattedResult} ${getUnitSymbol(toUnit)}</p>
+                    </div>
+                </div>
+            `;
+            
+            // 添加动画效果
+            document.getElementById('weight-result').classList.add('bg-green-50');
+            setTimeout(() => {
+                document.getElementById('weight-result').classList.remove('bg-green-50');
+            }, 1000);
+        });
+
+        // 温度单位换算
+        document.getElementById('convert-temperature').addEventListener('click', function() {
+            const value = parseFloat(document.getElementById('temperature-value').value);
+            const fromUnit = document.getElementById('temperature-from').value;
+            const toUnit = document.getElementById('temperature-to').value;
+            
+            if (isNaN(value)) {
+                document.getElementById('temperature-result').innerHTML = '<p class="text-red-500">请输入有效的数值</p>';
+                return;
+            }
+            
+            let result;
+            
+            // 温度转换逻辑
+            if (fromUnit === 'celsius') {
+                if (toUnit === 'fahrenheit') {
+                    result = (value * 9/5) + 32;
+                } else if (toUnit === 'kelvin') {
+                    result = value + 273.15;
+                } else {
+                    result = value;
+                }
+            } else if (fromUnit === 'fahrenheit') {
+                if (toUnit === 'celsius') {
+                    result = (value - 32) * 5/9;
+                } else if (toUnit === 'kelvin') {
+                    result = (value - 32) * 5/9 + 273.15;
+                } else {
+                    result = value;
+                }
+            } else if (fromUnit === 'kelvin') {
+                if (toUnit === 'celsius') {
+                    result = value - 273.15;
+                } else if (toUnit === 'fahrenheit') {
+                    result = (value - 273.15) * 9/5 + 32;
+                } else {
+                    result = value;
+                }
+            }
+            
+            // 格式化结果
+            const formattedResult = formatNumber(result, 2);
+            
+            // 显示结果
+            document.getElementById('temperature-result').innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <p class="text-gray-600">${formatNumber(value)} ${getUnitSymbol(fromUnit)} 等于</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <p class="result-value">${formattedResult} ${getUnitSymbol(toUnit)}</p>
+                    </div>
+                </div>
+            `;
+            
+            // 添加动画效果
+            document.getElementById('temperature-result').classList.add('bg-orange-50');
+            setTimeout(() => {
+                document.getElementById('temperature-result').classList.remove('bg-orange-50');
+            }, 1000);
+        });
+
+        // 时间单位换算
+        document.getElementById('convert-time').addEventListener('click', function() {
+            const value = parseFloat(document.getElementById('time-value').value);
+            const fromUnit = document.getElementById('time-from').value;
+            const toUnit = document.getElementById('time-to').value;
+            
+            if (isNaN(value)) {
+                document.getElementById('time-result').innerHTML = '<p class="text-red-500">请输入有效的数值</p>';
+                return;
+            }
+            
+            // 基础单位为秒(s)
+            const units = {
+                'second': 1,
+                'minute': 60,
+                'hour': 3600,
+                'day': 86400,
+                'week': 604800,
+                'month': 2592000, // 30天
+                'year': 31536000  // 365天
+            };
+            
+            // 转换为基础单位
+            const baseValue = value * units[fromUnit];
+            // 转换为目标单位
+            const result = baseValue / units[toUnit];
+            
+            // 格式化结果
+            const formattedResult = formatNumber(result);
+            
+            // 显示结果
+            document.getElementById('time-result').innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <p class="text-gray-600">${formatNumber(value)} ${getUnitSymbol(fromUnit)} 等于</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <p class="result-value">${formattedResult} ${getUnitSymbol(toUnit)}</p>
+                    </div>
+                </div>
+            `;
+            
+            // 添加动画效果
+            document.getElementById('time-result').classList.add('bg-purple-50');
+            setTimeout(() => {
+                document.getElementById('time-result').classList.remove('bg-purple-50');
+            }, 1000);
+        });
+
+        // 面积单位换算
+        document.getElementById('convert-area').addEventListener('click', function() {
+            const value = parseFloat(document.getElementById('area-value').value);
+            const fromUnit = document.getElementById('area-from').value;
+            const toUnit = document.getElementById('area-to').value;
+            
+            if (isNaN(value)) {
+                document.getElementById('area-result').innerHTML = '<p class="text-red-500">请输入有效的数值</p>';
+                return;
+            }
+            
+            // 基础单位为平方米(m²)
+            const units = {
+                'square-meter': 1,
+                'square-kilometer': 1000000,
+                'square-centimeter': 0.0001,
+                'square-millimeter': 0.000001,
+                'square-inch': 0.00064516,
+                'square-foot': 0.09290304,
+                'square-yard': 0.83612736,
+                'acre': 4046.8564224,
+                'hectare': 10000
+            };
+            
+            // 转换为基础单位
+            const baseValue = value * units[fromUnit];
+            // 转换为目标单位
+            const result = baseValue / units[toUnit];
+            
+            // 格式化结果
+            const formattedResult = formatNumber(result);
+            
+            // 显示结果
+            document.getElementById('area-result').innerHTML = `
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <p class="text-gray-600">${formatNumber(value)} ${getUnitSymbol(fromUnit)} 等于</p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <p class="result-value">${formattedResult} ${getUnitSymbol(toUnit)}</p>
+                    </div>
+                </div>
+            `;
+            
+            // 添加动画效果
+            document.getElementById('area-result').classList.add('bg-pink-50');
+            setTimeout(() => {
+                document.getElementById('area-result').classList.remove('bg-pink-50');
+            }, 1000);
+        });
+
+        // 切换类别标签
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                
+                // 移除所有标签的活动状态
+                document.querySelectorAll('.category-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // 添加当前标签的活动状态
+                this.classList.add('active');
+                
+                // 隐藏所有转换器
+                document.querySelectorAll('.converter-card').forEach(card => {
+                    card.classList.add('hidden');
+                });
+                
+                // 显示当前转换器
+                document.getElementById(category).classList.remove('hidden');
+                document.getElementById(category).classList.add('active');
+                
+                // 添加过渡动画
+                document.getElementById(category).style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById(category).style.opacity = '1';
+                    document.getElementById(category).style.transition = 'opacity 0.3s ease-in-out';
+                }, 50);
+            });
+        });
+
+        // 格式化数字（添加千位分隔符，控制小数位数）
+        function formatNumber(num, decimalPlaces = 6) {
+            // 处理非常大或非常小的数字，使用固定位数
+            if (Math.abs(num) >= 1e10 || Math.abs(num) < 1e-6) {
+                return num.toExponential(6);
+            }
+            
+            // 对于普通数字，根据大小决定保留的小数位数
+            let precision = decimalPlaces;
+            if (num >= 1000) precision = 2;
+            else if (num >= 100) precision = 3;
+            else if (num >= 10) precision = 4;
+            
+            // 格式化数字
+            let formatted = parseFloat(num.toFixed(precision)).toString();
+            
+            // 添加千位分隔符
+            if (formatted.includes('e')) {
+                return formatted;
+            }
+            
+            const parts = formatted.split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            return parts.join('.');
+        }
+
+        // 获取单位符号
+        function getUnitSymbol(unit) {
+            const symbols = {
+                // 长度单位
+                'meter': 'm',
+                'kilometer': 'km',
+                'centimeter': 'cm',
+                'millimeter': 'mm',
+                'inch': 'in',
+                'foot': 'ft',
+                'yard': 'yd',
+                'mile': 'mi',
+                
+                // 重量单位
+                'kilogram': 'kg',
+                'gram': 'g',
+                'milligram': 'mg',
+                'metric-ton': 't',
+                'pound': 'lb',
+                'ounce': 'oz',
+                
+                // 温度单位
+                'celsius': '°C',
+                'fahrenheit': '°F',
+                'kelvin': 'K',
+                
+                // 时间单位
+                'second': 's',
+                'minute': 'min',
+                'hour': 'h',
+                'day': 'd',
+                'week': 'wk',
+                'month': '月',
+                'year': '年',
+                
+                // 面积单位
+                'square-meter': 'm²',
+                'square-kilometer': 'km²',
+                'square-centimeter': 'cm²',
+                'square-millimeter': 'mm²',
+                'square-inch': 'in²',
+                'square-foot': 'ft²',
+                'square-yard': 'yd²',
+                'acre': 'acre',
+                'hectare': 'ha'
+            };
+            
+            return symbols[unit] || unit;
+        }
+
+        // 初始化：自动执行一次长度单位换算
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('convert-length').click();
+        });
+    </script>
+</body>
+</html>
